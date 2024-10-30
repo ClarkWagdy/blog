@@ -4,8 +4,7 @@ import Link from "next/link";
  
 import React, { useState } from "react";
 import { ArticleT } from "../../../config/Types/Articles";
-import AOS from "aos";
-import "aos/dist/aos.css";  
+ 
 import Image from "next/image";
 import { formatDate } from "../../../config/Methods/Getdate";
 interface Props{

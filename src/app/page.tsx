@@ -1,6 +1,6 @@
 'use client'
  
-import Image from "next/image";
+ 
 import { useEffect, useState } from "react";
 import { ArticleT } from "../../config/Types/Articles";
 import Card from "@/components/Card/Card";
@@ -67,7 +67,7 @@ axios
             <section className="flex flex-col items-center pb-16">
               <div className="Cardssection mb-8">
                 {Articles.slice(0, visibleItems).map(
-                  (Article: ArticleT, ind: number) => {
+                  (Article: ArticleT) => {
                     return <Card Article={Article} key={Article.id} />;
                   },
                 )}
