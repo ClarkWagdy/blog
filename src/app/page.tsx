@@ -38,7 +38,7 @@ axios
    
   })
   .catch(() => {});
-},[])
+},[]);
 
 
   return (
@@ -60,7 +60,7 @@ axios
             <p className="des animate__animated animate__fadeIn">
               The latest industry news, interviews, technologies, and resources.
             </p>
-            <input className="Searchinput" placeholder="Search"></input>
+            <input className="Searchinput" placeholder="Search"/>
           </section>
 
           {Articles.length > 0 ? (
