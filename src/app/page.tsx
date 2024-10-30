@@ -1,6 +1,5 @@
-'use client'
- 
- 
+"use client";
+
 import { useEffect, useState } from "react";
 import { ArticleT } from "../../config/Types/Articles";
 import Card from "@/components/Card/Card";
@@ -8,49 +7,67 @@ import axios from "axios";
 import Loading from "@/components/Loading/Loading";
 import "animate.css";
 import AOS from "aos";
-import "aos/dist/aos.css";  
- 
-
+import "aos/dist/aos.css";
+import Image from "next/image";
 
 export default function Home() {
-const [Articles, setArticleTs] = useState<ArticleT[]>([]);
-const [Load, setLoad] = useState<boolean>(true);
+  const [Articles, setArticleTs] = useState<ArticleT[]>([]);
+  const [Load, setLoad] = useState<boolean>(true);
+  const [Search, setSearch] = useState<string>("");
 
- 
-  const [visibleItems, setVisibleItems] = useState(9);
+  const [NoData, setNoData] = useState<boolean>(false);
+
+  const [visibleItems, setVisibleItems] = useState(8);
 
   const loadMore = () => {
     // setLoad(true)
-    setVisibleItems((prev) => prev + 9);
+    setVisibleItems((prev) => prev + 8);
     // setLoad(false);
-  }
-  
-useEffect(() => {
-  AOS.init();
-setLoad(true);
-axios
-  .get("https://dev.to/api/articles")
-  .then((res) => {
-    if(res.status===200){
-      setArticleTs(res.data);
-      setLoad(false);
-    }
-   
-  })
-  .catch(() => {});
-},[]);
+  };
 
+  useEffect(() => {
+    AOS.init();
+    setLoad(true);
+    axios
+      .get("https://dev.to/api/articles")
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.length > 0) {
+            setNoData(false);
+            setArticleTs(res.data);
+          } else {
+            setNoData(true);
+          }
+
+          setLoad(false);
+        }
+      })
+      .catch(() => {
+        setLoad(false);
+           setNoData(true);
+      });
+  }, []);
 
   return (
-    <div className="">
+    <div>
       {Load ? (
         <div className="h-screen w-screen flex justify-center items-center LoadingScreen">
           <Loading />
         </div>
+      ) : NoData ? (
+        <div className="w-screen h-screen flex justify-center items-center">
+          <Image
+            height={1000}
+            width={1000}
+            style={{ width: "calc(100vh / 2)" }}
+            src={"/2953962.jpg"}
+            alt="No Data"
+          />
+        </div>
       ) : (
-        <main className="flex flex-col main">
+        <div className="flex flex-col main">
           {/* Resources and insights  section*/}
-          <section className="flex    flex-col justify-center items-center Resourcescard">
+          <div className="flex    flex-col justify-center items-center Resourcescard">
             <p className="Our-blog animate__animated animate__fadeIn ">
               Our blog
             </p>
@@ -60,28 +77,33 @@ axios
             <p className="des animate__animated animate__fadeIn">
               The latest industry news, interviews, technologies, and resources.
             </p>
-            <input className="Searchinput" placeholder="Search"/>
-          </section>
+            <input
+              className="Searchinput"
+              value={Search}
+              onChange={(e)=>{
+                setSearch(e.target.value);
+              }}
+              type="text"
+              placeholder="Search"
+            />
+          </div>
 
-          {Articles.length > 0 ? (
-            <section className="flex flex-col items-center pb-16">
+          {Articles.length > 0 && (
+            <div className="flex flex-col items-center pb-16">
               <div className="Cardssection mb-8">
-                {Articles.slice(0, visibleItems).map(
-                  (Article: ArticleT) => {
-                    return <Card Article={Article} key={Article.id} />;
-                  },
-                )}
+                {Articles.slice(0, visibleItems).map((Article: ArticleT) => {
+                  return <Card Article={Article} key={Article.id} />;
+                })}
               </div>
-              {visibleItems < Articles.length&&(
-              <button className="Loadmorebtn" onClick={() => loadMore()}>
-                <img src="/Icon.svg" alt="Arrow down" />
-                Load more
-              </button>)}
-            </section>
-          ) : (
-            <></>
+              {visibleItems < Articles.length && (
+                <button className="Loadmorebtn" onClick={() => loadMore()}>
+                  <img src="/Icon.svg" alt="Arrow down" />
+                  Load more
+                </button>
+              )}
+            </div>
           )}
-        </main>
+        </div>
       )}
     </div>
   );
