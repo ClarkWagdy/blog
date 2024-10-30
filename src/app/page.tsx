@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArticleT } from "../../config/Types/Articles";
 import Card from "@/components/Card/Card";
 import axios from "axios";
