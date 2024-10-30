@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ArticleT } from "../../config/Types/Articles";
 import Card from "@/components/Card/Card";
 import axios from "axios";
@@ -25,29 +25,37 @@ export default function Home() {
     // setLoad(false);
   };
 
+   const GetData = (Filter:string) => {
+       axios
+         .get("https://dev.to/api/articles")
+         .then((res) => {
+           if (res.status === 200) {
+             if (res.data.length > 0) {
+               setNoData(false);
+               setArticleTs(
+                 res.data.filter((ele: ArticleT) => ele.title.includes(Filter)),
+               );
+             } else {
+               setNoData(true);
+             }
+
+             setLoad(false);
+           }
+         })
+         .catch(() => {
+           setLoad(false);
+           setNoData(true);
+         });
+     };
   useEffect(() => {
     AOS.init();
     setLoad(true);
-    axios
-      .get("https://dev.to/api/articles")
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.length > 0) {
-            setNoData(false);
-            setArticleTs(res.data);
-          } else {
-            setNoData(true);
-          }
-
-          setLoad(false);
-        }
-      })
-      .catch(() => {
-        setLoad(false);
-           setNoData(true);
-      });
+  GetData("");
   }, []);
-
+function HandleSearch(){
+  GetData(Search);
+ 
+}
   return (
     <div>
       {Load ? (
@@ -77,18 +85,40 @@ export default function Home() {
             <p className="des animate__animated animate__fadeIn">
               The latest industry news, interviews, technologies, and resources.
             </p>
-            <input
-              className="Searchinput"
-              value={Search}
-              onChange={(e)=>{
-                setSearch(e.target.value);
-              }}
-              type="text"
-              placeholder="Search"
-            />
+            <div className="flex">
+              <input
+                className="Searchinput"
+                value={Search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                type="text"
+                placeholder="Search"
+              />
+              {Search && (
+                <button
+                  className="btnclose animate__animated animate__fadeIn"
+                  onClick={() => {
+                    setSearch("");
+                    GetData("");
+                  }}
+                >
+                  x
+                </button>
+              )}
+            </div>
+
+            {Search && (
+              <button
+                className="Loadmorebtn animate__animated animate__fadeIn"
+                onClick={() => HandleSearch()}
+              >
+                Search
+              </button>
+            )}
           </div>
 
-          {Articles.length > 0 && (
+          {Articles.length > 0 ? (
             <div className="flex flex-col items-center pb-16">
               <div className="Cardssection mb-8">
                 {Articles.slice(0, visibleItems).map((Article: ArticleT) => {
@@ -101,6 +131,16 @@ export default function Home() {
                   Load more
                 </button>
               )}
+            </div>
+          ) : (
+            <div className="w-full  flex justify-center items-center">
+              <Image
+                height={1000}
+                width={1000}
+                style={{ width: "calc(100vh / 3)" }}
+                src={"/2953962.jpg"}
+                alt="No Data"
+              />
             </div>
           )}
         </div>
