@@ -1,7 +1,7 @@
  
 "use client"
 import Link from "next/link";
-import PropTypes from "prop-types";
+ 
 import React, { useState } from "react";
 import { ArticleT } from "../../../config/Types/Articles";
 import AOS from "aos";
